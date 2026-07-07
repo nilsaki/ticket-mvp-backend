@@ -7,6 +7,9 @@ from rest_framework.response import Response
 from .models import Ticket
 from .serializers import TicketSerializer
 
+from django.contrib.auth.models import User
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 class TicketViewSet(viewsets.ModelViewSet):
     serializer_class = TicketSerializer
@@ -69,3 +72,17 @@ class TicketViewSet(viewsets.ModelViewSet):
                 )
 
         return Response(TicketSerializer(ticket).data)
+
+@api_view(["POST"])
+def register_user(request):
+    username = request.data.get("username")
+    password = request.data.get("password")
+
+    if not username or not password:
+        return Response({"error": "username ve password gerekli"}, status=400)
+
+    if User.objects.filter(username=username).exists():
+        return Response({"error": "Bu kullanıcı zaten var"}, status=400)
+
+    User.objects.create_user(username=username, password=password)
+    return Response({"message": "Kullanıcı oluşturuldu"})
