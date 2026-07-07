@@ -9,6 +9,9 @@ from rest_framework.response import Response
 from .models import Ticket, UserProfile
 from .serializers import TicketSerializer
 
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import api_view, permission_classes
+
 class TicketViewSet(viewsets.ModelViewSet):
     serializer_class = TicketSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -72,6 +75,7 @@ class TicketViewSet(viewsets.ModelViewSet):
         return Response(TicketSerializer(ticket).data)
 
 @api_view(["POST"])
+@permission_classes([AllowAny])
 def register_user(request):
     username = request.data.get("username")
     password = request.data.get("password")
